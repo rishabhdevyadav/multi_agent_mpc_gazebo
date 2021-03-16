@@ -389,7 +389,7 @@ while True:
         ov1, oomega1, _, _, _ = iterative_linear_mpc_control(xref1, x0_1, vref1, ov1, oomega1) #solve MPC
         if oomega1 is not None:
             vi1 , omegai1 = ov1[0], oomega1[0]
-        # state1 = update_state_gazebo(state1, pos[0], pos[1], pos[2]) 
+        state1 = update_state_gazebo(state1, pos[0], pos[1], pos[2]) 
         
 
         #Robot2
@@ -401,9 +401,9 @@ while True:
         ov2, oomega2, _, _, _ = iterative_linear_mpc_control(xref2, x0_2, vref2, ov2, oomega2)
         if oomega2 is not None:
             vi2 , omegai2 = ov2[0], oomega2[0]    
-            if target_ind2 - nearest_ind2 < 5:  #add clipping
-                vi2 = 0                         #stop follower
-        # state2 = update_state_gazebo(state2, pos[3], pos[4], pos[5])
+            if target_ind2 - nearest_ind2 < 5:  
+                vi2 = 0
+        state2 = update_state_gazebo(state2, pos[3], pos[4], pos[5])
 
         
 
@@ -413,32 +413,19 @@ while True:
         ov3, oomega3, _, _, _ = iterative_linear_mpc_control(xref3, x0_3, vref3, ov3, oomega3)
         if oomega3 is not None:
             vi3 , omegai3 = ov3[0], oomega3[0]    
-            if target_ind3 - nearest_ind3 < 5: 
+            if target_ind3 - nearest_ind3 < 5:
                 vi3 = 0
-        # state3 = update_state_gazebo(state3, pos[6], pos[7], pos[8])
-
-
-        #add clipping
-        dist12 = np.sqrt( np.square(state1.x - state2.x) + np.square(state1.y - state2.y))
-        dist23 = np.sqrt( np.square(state2.x - state3.x) + np.square(state2.y - state3.y))
-
-        if dist12 > 1.2:
-            vi1 = 0   #stop leader
-            print(dist12)
-
-        if dist23 > 1.2:
-            vi2 = 0
-            print(dist23)
-
-        state1 = update_state_gazebo(state1, pos[0], pos[1], pos[2]) 
-        state2 = update_state_gazebo(state2, pos[3], pos[4], pos[5])
         state3 = update_state_gazebo(state3, pos[6], pos[7], pos[8])
 
+
+        dist12 = np.sqrt( np.square(state1.x - state2.x) + np.square(state1.y - state2.y))
+        dist23 = np.sqrt( np.square(state2.x - state3.x) + np.square(state2.y - state3.y))
+        print(dist12, dist23)
 
 
         arr = [vi1, omegai1, vi2, omegai2, vi3, omegai3]
         Tcp_Write_Array(arr)  
-        # print("-------------")
+        print("-------------")
 
         time.sleep(0.2)
 
